@@ -16,7 +16,7 @@ max capacity.
 
 ### Children
 
-In test data there are 1000 randomly generated children who have applied for preschool. 
+In test data there are 1500 randomly generated children who have applied for preschool. 
 
 Each child has a capacity requirement. For 75% of them it is 1.0 (applied for preschool and connected daycare), 
 for 20% it is 0.5 (preschool only) and for 5% it is 1.5 (assistance need).
@@ -72,5 +72,17 @@ The cost function is a sum of the following
 
 ## Improvements to be implemented
 
-- Respecting unit languages
-- Respecting sibling basis
+- Taking unit languages into account
+- Taking sibling basis into account
+- Taking existing daycare placement into account
+
+## Example result
+
+In this example, after 2000 generations
+
+- The highest capacity is 102%
+- 60.5% of the children got into their first preference
+- 87.9% of the children got into some of their preferences
+- 99.7% of the children who had 3 preferences got into some of them
+
+![Example result graph](./static/example-result.png)

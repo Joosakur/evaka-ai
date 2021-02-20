@@ -10,13 +10,13 @@ fun main(args: Array<String>) {
 
     val population = Population(units, children)
 
-    println("Sukupolvi, Korkein täyttö, Lapsia ykköstoiveessa, Lapsia jossain toiveista")
+    println("Generation, Highest used capacity, Children at first preferred unit, Children at any preferred unit, Children at any preferred unit when 3 preferences given")
 
     for (i in 0 until 2000) {
         population.advance()
 
         val result = population.getBest()
-        println("${population.generation}, ${result.maxCapacityPercentage}%, ${result.childrenInFirstPreferencePercentage}%, ${result.childrenInOneOfPreferencesPercentage}%")
+        println("${population.generation}, ${result.maxCapacityPercentage}%, ${result.childrenInFirstPreferencePercentage}%, ${result.childrenInOneOfPreferencesPercentage}%, ${result.childrenInOneOfPreferencesWhen3GivenPercentage}%")
     }
 
 }

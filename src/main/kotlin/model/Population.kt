@@ -87,6 +87,10 @@ data class Result (
 
     val childrenInOneOfPreferencesPercentage: Double
         get() = this.units.flatMap { it.children }.let { 100.0 * it.filter { it.ownPreferenceRank != null }.size / it.size }
+
+    val childrenInOneOfPreferencesWhen3GivenPercentage: Double
+        get() = this.units.flatMap { it.children.filter { it.thirdPreference != null } }
+            .let { 100.0 * it.filter { it.ownPreferenceRank != null }.size / it.size }
 }
 
 data class ResultUnit(

@@ -7,7 +7,7 @@ class Parameters {
         const val descendantsPerPair = 5
 
         val testData = object : TestDataParameters {
-            override val childCount = 1200
+            override val childCount = 1500
         }
     }
 }
