@@ -68,7 +68,7 @@ The cost function is a sum of the following
 
 - Child is assigned to their n:th preference (starting from 0): n
 - Child is not placed among preferred units: 2 * number of preferred units
-- Unit has capacity x percentage units over 100%: 20 * x
+- Unit has capacity x percentage units over 100%: 10 * x
 
 ## Improvements to be implemented
 

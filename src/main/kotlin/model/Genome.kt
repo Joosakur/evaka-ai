@@ -33,7 +33,7 @@ data class Genome (
             .map { (used, max) -> 100 * used / max }
 
         cost += capacityPercentages
-            .map { (it - 100).coerceAtLeast(0.0) * 20 }
+            .map { (it - 100).coerceAtLeast(0.0) * 10 }
             .sum()
     }
 
