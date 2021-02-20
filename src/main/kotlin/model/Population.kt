@@ -22,6 +22,7 @@ class Population(
         generation++
 
         val descendants = (0 until Parameters.pairsToMate).map {
+            // todo: weight by cost
             Pair(
                 members.pickRandom(),
                 members.pickRandom()
