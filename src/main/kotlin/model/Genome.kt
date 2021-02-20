@@ -21,7 +21,9 @@ data class Genome (
 
         genes.zip(children).forEach { (g, child) ->
             cost += g
-            if(g > child.ownPreferredUnits.size - 1) cost += 2
+
+            if(g > child.ownPreferredUnits.size - 1)
+                cost += 2 * child.ownPreferredUnits.size
 
             val unitId = child.allPreferredUnits[g].id
             unitCapacities.compute(unitId) { _, capacity -> capacity!! + child.capacity }
