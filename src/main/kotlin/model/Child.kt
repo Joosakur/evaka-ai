@@ -1,6 +1,7 @@
 package model
 
 import utils.pickRandom
+import utils.random
 import java.util.*
 
 data class Child(
@@ -19,7 +20,7 @@ private fun generateTestChild(units: List<DaycareUnit>): Child {
     val firstPreference = units.pickRandom()
     val ownPreferredUnits = mutableListOf(firstPreference)
 
-    val r1 = Math.random()
+    val r1 = random.nextDouble()
 
     if(r1 < 0.7){
         val secondPreference = firstPreference.nearbyUnits.pickRandom()
@@ -43,7 +44,7 @@ private fun generateTestChild(units: List<DaycareUnit>): Child {
         allPreferredUnits.add(extraPreference)
     }
 
-    val r2 = Math.random()
+    val r2 = random.nextDouble()
     val capacity = if (r2 < 0.05) 1.5 else if(r2 < 0.25) 0.5 else 1.0
 
     return Child(

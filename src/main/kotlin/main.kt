@@ -10,12 +10,13 @@ fun main(args: Array<String>) {
 
     val population = Population(units, children)
 
-    println("Sukupolvi, Korkein täyttö, Pienin täyttö, Lapsia ykköstoiveessa")
-    for (i in 0 until 1000) {
+    println("Sukupolvi, Korkein täyttö, Lapsia ykköstoiveessa, Lapsia jossain toiveista")
+
+    for (i in 0 until 2000) {
         population.advance()
 
         val result = population.getBest()
-        println("${population.generation}, ${result.maxCapacityPercentage}%, ${result.minCapacityPercentage}%, ${result.childrenInFirstChoicePercentage}%")
+        println("${population.generation}, ${result.maxCapacityPercentage}%, ${result.childrenInFirstPreferencePercentage}%, ${result.childrenInOneOfPreferencesPercentage}%")
     }
 
 }

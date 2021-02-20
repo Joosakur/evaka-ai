@@ -1,5 +1,6 @@
 package model
 
+import utils.random
 import utils.randomGene
 import java.lang.Error
 import kotlin.properties.Delegates
@@ -37,10 +38,10 @@ data class Genome (
     fun produceDescendant(other: Genome, units: List<DaycareUnit>, children: List<Child>): Genome {
         return this.genes.zip(other.genes)
             .map { (g1, g2) ->
-                if(Math.random() < Parameters.mutationRate) {
+                if(random.nextDouble() < Parameters.mutationRate) {
                     randomGene()
                 } else {
-                    if (Math.random() < 0.5) g1 else g2
+                    if (random.nextDouble() < 0.5) g1 else g2
                 }
             }
             .let { Genome(it) }

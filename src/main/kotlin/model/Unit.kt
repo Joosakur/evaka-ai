@@ -3,6 +3,7 @@ package model
 import com.beust.klaxon.Converter
 import com.beust.klaxon.JsonValue
 import com.beust.klaxon.Klaxon
+import utils.random
 import java.io.File
 import java.util.UUID
 import kotlin.math.*
@@ -50,7 +51,7 @@ fun getUnitData(): List<DaycareUnit> {
     }
 
     return units.map { unit ->
-        val maxCapacity = floor(Math.random() * 36) + 15
+        val maxCapacity = floor(random.nextDouble() * 36) + 15
 
         DaycareUnit(
             id = unit.id,
@@ -60,7 +61,7 @@ fun getUnitData(): List<DaycareUnit> {
                 .slice(0 until 10)
                 .map { (id, distance) -> NearbyUnit(id, distance) },
             maxCapacity = maxCapacity,
-            usedCapacity = round(((Math.random() * 0.7) + 0.2) * maxCapacity)
+            usedCapacity = round(((random.nextDouble() * 0.7) + 0.2) * maxCapacity)
         )
     }
 }
