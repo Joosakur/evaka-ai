@@ -1,10 +1,11 @@
 import model.Population
 import model.generateTestChildren
 import model.getUnitData
+import model.mapChild
 
 fun main(args: Array<String>) {
     val units = getUnitData()
-    val children = generateTestChildren(Parameters.testData.childCount, units)
+    val children = generateTestChildren(Parameters.testData.childCount, units).map { mapChild(it, units) }
 
     println("Generated test data of ${units.size} units and ${children.size} children")
 

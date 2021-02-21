@@ -11,6 +11,8 @@ import kotlin.math.*
 data class DaycareUnit(
     val id: UUID,
     val name: String,
+    val providerType: String,
+    val language: String,
     val nearbyUnits: List<NearbyUnit>,
     val maxCapacity: Double,
     val usedCapacity: Double
@@ -23,7 +25,9 @@ data class Coordinates(
 
 data class NearbyUnit(
     val id: UUID,
-    val distance: Double
+    val distance: Double,
+    val providerType: String,
+    val language: String
 )
 
 fun getUnitData(): List<DaycareUnit> {
@@ -56,10 +60,20 @@ fun getUnitData(): List<DaycareUnit> {
         DaycareUnit(
             id = unit.id,
             name = unit.name,
+            providerType = unit.providerType,
+            language = unit.language,
             nearbyUnits = distances[unit.id]!!
                 .sortedBy { it.second }
-                .slice(0 until 10)
-                .map { (id, distance) -> NearbyUnit(id, distance) },
+                .map { (id, distance) ->
+                     units.find { it.id == id }!!.let { otherUnit ->
+                         NearbyUnit(
+                             id = id,
+                             distance = distance,
+                             providerType = otherUnit.providerType,
+                             language = otherUnit.language
+                         )
+                     }
+                },
             maxCapacity = maxCapacity,
             usedCapacity = round(((random.nextDouble() * 0.7) + 0.2) * maxCapacity)
         )
@@ -86,7 +100,9 @@ private data class JsonDaycareUnit(
     val id: UUID,
     val location: Coordinates?,
     val name: String,
-    val type: List<String>
+    val type: List<String>,
+    val providerType: String,
+    val language: String
 )
 
 private val uuidConverter = object: Converter {

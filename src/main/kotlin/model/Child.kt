@@ -6,51 +6,81 @@ import java.util.*
 
 data class Child(
     val id: UUID,
-    val ownPreferredUnits: List<DaycareUnit>,
+    val originalPreferredUnits: List<DaycareUnit>,
     val allPreferredUnits: List<DaycareUnit>,
-    val capacity: Double,
-    val assignment: DaycareUnit? = null
+    val capacity: Double
 )
 
-fun generateTestChildren(count: Int, units: List<DaycareUnit>): List<Child> {
-    return (0 until count).map { generateTestChild(units) }
-}
+fun mapChild(child: ChildData, units: List<DaycareUnit>): Child {
+    val originalPreferredUnits = child.preferredUnits.mapNotNull { id -> units.find { it.id == id } }
 
-private fun generateTestChild(units: List<DaycareUnit>): Child {
-    val firstPreference = units.pickRandom()
-    val ownPreferredUnits = mutableListOf(firstPreference)
-
-    val r1 = random.nextDouble()
-
-    if(r1 < 0.7){
-        val secondPreference = firstPreference.nearbyUnits.pickRandom()
-            .let { (id) -> units.find { it.id == id }!! }
-        ownPreferredUnits.add(secondPreference)
-    }
-    if(r1 < 0.4){
-        val thirdPreference = firstPreference.nearbyUnits
-            .filterNot { (id) -> ownPreferredUnits.any { it.id == id } }
-            .pickRandom()
-            .let { (id) -> units.find { it.id == id }!! }
-        ownPreferredUnits.add(thirdPreference)
-    }
-
-    val allPreferredUnits = mutableListOf(*ownPreferredUnits.toTypedArray())
+    val allPreferredUnits = mutableListOf(*originalPreferredUnits.toTypedArray())
     while (allPreferredUnits.size < 5) {
-        val extraPreference = firstPreference.nearbyUnits
-            .filterNot { (id) -> allPreferredUnits.any { it.id == id } }
-            .pickRandom()
+        val extraPreference = originalPreferredUnits.first().nearbyUnits
+            .first { unit ->
+                allPreferredUnits.none { it.id == unit.id } &&
+                    originalPreferredUnits.any { it.language == unit.language } &&
+                    unit.providerType != "PRIVATE_SERVICE_VOUCHER" &&
+                    unit.providerType != "PRIVATE"
+            }
             .let { (id) -> units.find { it.id == id }!! }
+
         allPreferredUnits.add(extraPreference)
     }
 
-    val r2 = random.nextDouble()
-    val capacity = if (r2 < 0.05) 1.5 else if(r2 < 0.25) 0.5 else 1.0
+    val capacity = child.assistanceNeedFactor * if(child.connectedDaycare) 1.0 else 0.5
 
     return Child(
-        id = UUID.randomUUID(),
-        ownPreferredUnits = ownPreferredUnits.toList(),
-        allPreferredUnits = allPreferredUnits.toList(),
+        id = child.id,
+        originalPreferredUnits = originalPreferredUnits,
+        allPreferredUnits = allPreferredUnits,
         capacity = capacity
+    )
+}
+
+data class ChildData(
+    val id: UUID,
+    val preferredUnits: List<UUID>,
+    val connectedDaycare: Boolean,
+    val assistanceNeedFactor: Double
+)
+
+fun generateTestChildren(count: Int, units: List<DaycareUnit>): List<ChildData> {
+    return (0 until count).map { generateTestChild(units) }
+}
+
+private fun generateTestChild(units: List<DaycareUnit>): ChildData {
+    val r1 = random.nextDouble()
+    val onlySwedish = r1 < 0.1
+    val onlyFinnish = r1 > 0.15
+
+    val filteredUnits = if(onlyFinnish) units.filter { it.language == "fi" } else if(onlySwedish) units.filter { it.language == "sv" } else units
+    val firstPreference = filteredUnits.pickRandom()
+    val originalPreferredUnits = mutableListOf(firstPreference.id)
+
+    val filteredNearbyUnits = firstPreference.nearbyUnits.let {
+        if(onlyFinnish) it.filter { it.language == "fi" } else if(onlySwedish) it.filter { it.language == "sv" } else it
+    }
+
+    val r2 = random.nextDouble()
+    if(r2 < 0.7){
+        val secondPreference = filteredNearbyUnits.slice(0 until 8).pickRandom().id
+        originalPreferredUnits.add(secondPreference)
+    }
+    if(r2 < 0.4){
+        val thirdPreference = firstPreference.nearbyUnits
+            .slice(0 until 15)
+            .filterNot { (id) -> originalPreferredUnits.contains(id) }
+            .pickRandom()
+            .id
+        originalPreferredUnits.add(thirdPreference)
+    }
+
+    val r3 = random.nextDouble()
+    return ChildData(
+        id = UUID.randomUUID(),
+        preferredUnits = originalPreferredUnits,
+        connectedDaycare = r3 < 0.75,
+        assistanceNeedFactor = if(r3 < 0.05) 1.5 else 1.0
     )
 }

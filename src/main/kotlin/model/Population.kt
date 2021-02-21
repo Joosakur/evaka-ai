@@ -31,6 +31,7 @@ class Population(
         }
 
         members = (members + descendants)
+            .toSet()
             .sortedBy { it.cost }
             .slice(0 until Parameters.populationSize)
     }
@@ -47,13 +48,13 @@ class Population(
                 .map { child -> ResultChild(
                     id = child.id,
                     capacity = child.capacity,
-                    firstPreference = child.ownPreferredUnits.first().name,
-                    secondPreference = child.ownPreferredUnits.getOrNull(1)?.name,
-                    thirdPreference = child.ownPreferredUnits.getOrNull(2)?.name,
-                    distanceToFirstPreference = child.ownPreferredUnits.first().let { first ->
+                    firstPreference = child.originalPreferredUnits.first().name,
+                    secondPreference = child.originalPreferredUnits.getOrNull(1)?.name,
+                    thirdPreference = child.originalPreferredUnits.getOrNull(2)?.name,
+                    distanceToFirstPreference = child.originalPreferredUnits.first().let { first ->
                         if(first.id == unit.id) 0.0 else first.nearbyUnits.find { (id) -> unit.id == id }!!.distance
                     },
-                    ownPreferenceRank = child.ownPreferredUnits.indexOfFirst { it.id == unit.id }.takeIf { it >= 0 },
+                    originalPreferenceRank = child.originalPreferredUnits.indexOfFirst { it.id == unit.id }.takeIf { it >= 0 },
                     preferenceRank = child.allPreferredUnits.indexOfFirst { it.id == unit.id }
                 ) }
 
@@ -83,14 +84,14 @@ data class Result (
         get() = this.units.minByOrNull { it.capacityPercentage }!!.capacityPercentage
 
     val childrenInFirstPreferencePercentage: Double
-        get() = this.units.flatMap { it.children }.let { 100.0 * it.filter { it.ownPreferenceRank == 0 }.size / it.size }
+        get() = this.units.flatMap { it.children }.let { 100.0 * it.filter { it.originalPreferenceRank == 0 }.size / it.size }
 
     val childrenInOneOfPreferencesPercentage: Double
-        get() = this.units.flatMap { it.children }.let { 100.0 * it.filter { it.ownPreferenceRank != null }.size / it.size }
+        get() = this.units.flatMap { it.children }.let { 100.0 * it.filter { it.originalPreferenceRank != null }.size / it.size }
 
     val childrenInOneOfPreferencesWhen3GivenPercentage: Double
         get() = this.units.flatMap { it.children.filter { it.thirdPreference != null } }
-            .let { 100.0 * it.filter { it.ownPreferenceRank != null }.size / it.size }
+            .let { 100.0 * it.filter { it.originalPreferenceRank != null }.size / it.size }
 }
 
 data class ResultUnit(
@@ -108,6 +109,6 @@ data class ResultChild(
     val secondPreference: String?,
     val thirdPreference: String?,
     val distanceToFirstPreference: Double,
-    val ownPreferenceRank: Int?,
+    val originalPreferenceRank: Int?,
     val preferenceRank: Int
 )

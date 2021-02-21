@@ -22,8 +22,8 @@ data class Genome (
         genes.zip(children).forEach { (g, child) ->
             cost += g
 
-            if(g > child.ownPreferredUnits.size - 1)
-                cost += 2 * child.ownPreferredUnits.size
+            if(g > child.originalPreferredUnits.size - 1)
+                cost += 2 * child.originalPreferredUnits.size
 
             val unitId = child.allPreferredUnits[g].id
             unitCapacities.compute(unitId) { _, capacity -> capacity!! + child.capacity }
@@ -33,7 +33,7 @@ data class Genome (
             .map { (used, max) -> 100 * used / max }
 
         cost += capacityPercentages
-            .map { (it - 100).coerceAtLeast(0.0) * 10 }
+            .map { it -> (it - 100).coerceAtLeast(0.0) * 15 }
             .sum()
     }
 
@@ -48,6 +48,21 @@ data class Genome (
             }
             .let { Genome(it) }
             .also { it.calcCost(units, children) }
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as Genome
+
+        if (genes != other.genes) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        return genes.hashCode()
     }
 
 }

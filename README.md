@@ -21,12 +21,9 @@ In test data there are 1500 randomly generated children who have applied for pre
 Each child has a capacity requirement. For 75% of them it is 1.0 (applied for preschool and connected daycare), 
 for 20% it is 0.5 (preschool only) and for 5% it is 1.5 (assistance need).
 
-Each child had a randomly selected preferred unit. 70% of the children also have a secondary preference (randomly 
-selected from the 9 nearest units) and 40% also have a third preference (also randomly selected from the 9 nearest 
-units).
-
-For each child, additional preferred units are generated from units near the first preference until a total
-of 5 is reached.
+Each child has a randomly selected preferred unit. 70% of the children also have a secondary preference (randomly 
+selected from the 8 nearest units) and 40% also have a third preference (randomly selected from the 15 nearest 
+units). 85% of the children select only finnish speaking units and 10% only swedish speaking units.
 
 ## The algorithm
 
@@ -39,6 +36,11 @@ an integer between 0 and 4 (inclusive), which represents to which of the child's
 assigned.
 
 ### Initial population
+
+Since it may not be possible to assign every child to one of their preferred units, especially those that have selected
+less than 3 preferences, we generate additional preferences until there is a total of 5. The additional ones will be
+chosen based on distance from the first original preference. Also, unit's language must be same as in one of 
+the original preferences and its provider type cannot be private or service voucher.
 
 The initial population is created by assigning each gene in each candidate a value with the following 
 random distribution:
@@ -58,21 +60,21 @@ with a lower cost.
 
 For each pair we produce descendants by selecting each gene randomly from either parent. Additionally, there is a 
 chance of mutation, where a gene is replaced by a new random number with the same distribution as above with the 
-initial population. A cost for each is calculated.
+initial population. A cost for each produced candidate is calculated.
 
-Finally, we select the best of them to advance to next generation, so that the population size remains constant.
+Finally, we select the best candidates of the combined population to advance to next generation, so that the population 
+size remains constant.
 
 ## Cost function
 
 The cost function is a sum of the following
 
 - Child is assigned to their n:th preference (starting from 0): n
-- Child is not placed among preferred units: 2 * number of preferred units
-- Unit has capacity x percentage units over 100%: 10 * x
+- Child is not placed into any of their original preferred units: 2 * number of original preferred units
+- Unit has capacity x percentage points over 100%: 15 * x
 
 ## Improvements to be implemented
 
-- Taking unit languages into account
 - Taking sibling basis into account
 - Taking existing daycare placement into account
 
@@ -80,9 +82,9 @@ The cost function is a sum of the following
 
 In this example, after 2000 generations
 
-- The highest capacity is 102%
-- 60.5% of the children got into their first preference
-- 87.9% of the children got into some of their preferences
-- 99.7% of the children who had 3 preferences got into some of them
+- The highest capacity is 100%
+- 63% of the children got into their first preference
+- 89% of the children got into some of their preferences
+- 100% of the children who had 3 preferences got into some of them
 
 ![Example result graph](./static/example-result.png)
